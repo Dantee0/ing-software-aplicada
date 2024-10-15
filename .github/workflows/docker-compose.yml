@@ -1,8 +1,0 @@
-version: '3'
-
-services:
-    image: ingenieria:v1.1.0
-    web:
-        build:
-        ports:
-            - '5000:5000'
