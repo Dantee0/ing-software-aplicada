@@ -35,7 +35,14 @@ jobs:
         imageToDeploy: ${{ secrets.ACR_NAME_URL }}/${{env.REPO_NAME}}:${{ github.sha }}
         ingress: external
         targetPort: 5000
-        
+        environmentsVariables:
+          USER_DB = "${{ secrets.USER_DB }}"
+          PASS_DB = "${{ secrets.PASS_DB }}"
+          URL_DB = "${{ secrets.URL_DB }}"
+          NAME_DB = "${{ secrets.NAME_DB }}"
+          PORT_DB = "${{ secrets.PORT_DB }}"
+          CONECTION_STRING = "${{ secrets.CONNECTION_STRING }}"
+          OTEL_SERVICE_NAME = "${{ secrets.OTEL_SERVICE_NAME }}"
     
     - name: 'logout'
       run: |

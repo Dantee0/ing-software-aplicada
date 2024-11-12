@@ -28,7 +28,7 @@ load_dotenv()
 # Depuración: Verificar si las variables de entorno están cargadas correctamente
 print("Depuración de variables de entorno:")
 for key, value in os.environ.items():
-    if "INSTRUMENTATION" in key or "CONNECTION" in key:
+    if "INSTRUMENTATION" in key or "CONNECTION" in key or "DB" in key:
         print(f"{key}: {value}")
 
 # Configuración de logs y trazas (OpenTelemetry)
@@ -53,7 +53,9 @@ def create_app():
     # Crear la app de Flask
     app_context = os.getenv('FLASK_CONTEXT')
     app = Flask(__name__)
-    f = config.factory(app_context if app_context else 'development')
+
+    # Configuración del entorno
+    f = factory(app_context if app_context else 'development')
     app.config.from_object(f)
 
     # Configurar la conexión a PostgreSQL
@@ -79,8 +81,9 @@ def create_app():
             logger.info("Conexión a la base de datos cerrada.")
 
     # Configurar el proveedor de trazas para OpenTelemetry
+    otel_service_name = os.getenv("OTEL_SERVICE_NAME", "default-service")
     tracer_provider = TracerProvider(
-        resource=Resource.create({SERVICE_NAME: app.config['OTEL_SERVICE_NAME']})
+        resource=Resource.create({SERVICE_NAME: otel_service_name})
     )
     trace.set_tracer_provider(tracer_provider)
     FlaskInstrumentor().instrument_app(app)
@@ -101,3 +104,4 @@ def create_app():
         return "Hola, Flask está conectado a PostgreSQL y configurado con Azure Monitor."
 
     return app
+
